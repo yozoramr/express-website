@@ -1,3 +1,8 @@
+const jwt = require('jsonwebtoken');
+
+// const jwt = require('jsonwebtoken');
+
+
 const express = require('express')
 const app = express()
 
@@ -18,7 +23,7 @@ const secretKey = 'mykey'
 // 导入用于生成 JWT 字符串的包
 const { expressjwt: expressJWT } = require('express-jwt')
 // 注册将 JWT 字符串解析还原成 JSON 对象的中间件
-app.use(expressJWT({ secret: secretKey, algorithms: ['HS256'] }).unless({ path:['/login']}));
+app.use(expressJWT({ secret: secretKey, algorithms: ['HS256'] }).unless({ path:['/api/login/login']}));
 
 // 全局错误中间件（未获取到token的错误处理）
 app.use((err, req, res, next) => {
@@ -35,22 +40,43 @@ app.use((err, req, res, next) => {
   })
 })
 
+const userDate = [
+  {
+    username: "admin",
+    password: "123456"
+  },
+  {
+    username: "user01",
+    password: "12345678"
+  }
+]
+
+// 用户登录
 // 登录成功后，调用 jwt.sign() 方法生成 JWT 字符串，通过 token 属性发送给客户端
-app.post('/login', (req, res) => {
-  console.log(req.body)
-  const username = req.body.username  // 用户的信息对象
-  // 参数1： 用户的信息对象
-  // 参数2： 加密的密钥
-  // 参数3： 配置对象，可以配置当前 token 的有效期
-  const tokenStr = jwt.sign(
-    {username: username},
-    secretKey,
-    { expiresIn: '2000s'}
-  )
-  res.status(200).send({
-    message: '登录成功',
-    token: tokenStr
-  })
+app.post('/api/login/login', (req, res) => {
+  const userFind = userDate.find(userResult => userResult.username === req.body.username)
+  if (!userFind){
+    res.status(401).send({
+      msg: '用户名未找到',
+      token: ''
+    })
+  }
+  if (userFind && userFind.password === req.body.password){
+    const tokenStr = jwt.sign(
+      {username: req.body.username},
+      secretKey,
+      { expiresIn: '2000s'}
+    )
+    res.status(200).send({
+      msg: '登录成功',
+      token: tokenStr
+    })
+  }else{
+    res.status(401).send({
+      msg: '密码错误',
+      token: ''
+    })
+  }
 })
 
 // 把路由模块，注册到 app 上
