@@ -23,7 +23,36 @@ router.post('/post', (req, res) => {
   })
 })
 
-// 获取用户数据
+// indexStatus
+
+router.get('/indexStatusApi/usechartStatus', (req, res) => {
+  res.status(200).send({
+    chartStatus1: {
+      tittle: "仓储容积",
+      subheading: "Storage capacity",
+      numberMin: 671,
+      numberMax: 1200
+    },
+    chartStatus2: {
+      tittle: "商品件数",
+      subheading: "Number of items",
+      numberMin: 6750,
+      numberMax: 9999
+    },
+    chartStatus3: {
+      tittle: "加盟签约",
+      subheading: "Franchise signing",
+      numberMin: 16,
+      numberMax: 20
+    },
+    chartStatus4: {
+      tittle: "供应商签约",
+      subheading: "Supplier signing",
+      numberMin: 56,
+      numberMax: 62
+    }
+  })
+})
 
 
 module.exports = router
